@@ -1,0 +1,91 @@
+📊 Bank Statement Automation Guide
+Transforming PDF Statements into Organized Excel Insights
+This guide is designed for beginners to process complex bank statements (like HDFC) using Google Colab. This method is the most reliable for iPhones and computers because it uses powerful cloud servers to handle heavy processing.
+
+Step 1: Setting Up Your Workspace
+Open Google Colab: Navigate to colab.research.google.com.
+
+Sign In: Use your Google Account.
+
+New Notebook: Click the "New Notebook" button.
+
+Step 2: Uploading Your PDF
+On the left sidebar, click the Folder Icon (📁).
+
+Click the Upload Icon (the paper with the upward arrow).
+
+Select your bank statement (e.g., statement.pdf).
+
+Tip: Rename your file to something short to avoid errors in the code.
+
+Step 3: The Automation Code
+Copy and paste these two blocks of code into separate cells in Colab.
+
+Part A: Install the Required Tools
+This prepares the environment to read tables and write Excel files.
+
+Python
+# 🛠️ INSTALLING LIBRARIES
+!pip install pdfplumber pandas openpyxl -q
+print("✅ Tools installed successfully!")
+Part B: The Main Cleaning Engine
+This block reads every page, merges broken text, and categorizes your spending.
+
+Python
+import pdfplumber
+import pandas as pd
+
+# 🚀 CONFIGURATION
+FILENAME = "ACC statement sept 30 to feb 6_unlocked.pdf" # <-- Change to your filename
+OUTPUT = "Organized_Expenses.xlsx"
+
+def generate_report(pdf_name):
+    all_data = []
+    print("⏳ Processing 72 pages... please wait.")
+    
+    with pdfplumber.open(pdf_name) as pdf:
+        for page in pdf.pages:
+            table = page.extract_table()
+            if table:
+                all_data.extend(table[1:]) 
+
+    # Creating the Table
+    df = pd.DataFrame(all_data, columns=["Date", "Narration", "Ref", "Value_Dt", "Sent", "Received", "Balance"])
+
+    # 🛠️ DATA CLEANING
+    df['Date'] = df['Date'].replace('', None).ffill() # Fixes broken rows
+    df['Sent'] = pd.to_numeric(df['Sent'].str.replace(',', ''), errors='coerce').fillna(0)
+    df['Received'] = pd.to_numeric(df['Received'].str.replace(',', ''), errors='coerce').fillna(0)
+
+    # 🏷️ CATEGORIZATION (Your Specific Brackets)
+    def get_bracket(amt):
+        if amt == 0: return "Received (Money In)"
+        if amt < 100: return "Under 100 rs"
+        if amt < 500: return "Under 500 rs"
+        if amt < 1000: return "Under 1000 rs"
+        if amt < 5000: return "Under 5000 rs"
+        return "Above 5000 rs"
+
+    df['Bracket'] = df['Sent'].apply(get_bracket)
+    
+    # 🏁 FINAL SORT & EXPORT
+    # Sorts so the biggest "Above 5000" expenses appear first
+    df = df.sort_values(by=["Sent"], ascending=False)
+    df.to_excel(OUTPUT, index=False)
+    
+    print(f"✨ SUCCESS! '{OUTPUT}' has been created.")
+
+generate_report(FILENAME)
+Step 4: Downloading the Result
+Once the code finishes (look for the green checkmark), go back to the Folder Sidebar.
+
+Locate Organized_Expenses.xlsx.
+
+Click the three dots (⋮) next to the filename and select Download.
+
+💡 Pro Tips for Success
+Large Files: Since your statement has over 695 debits, the processing might take 30–60 seconds. Do not close the tab!
+
+Privacy: Your data is processed in a temporary cloud instance owned by you. Once you close the Colab tab, the uploaded file is deleted from the server.
+
+Mobile View: If using an iPhone, tap the "AA" icon in the address bar and select "Request Desktop Website" for a better experience.
