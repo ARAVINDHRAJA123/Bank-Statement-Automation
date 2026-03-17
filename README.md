@@ -78,4 +78,10 @@ This project solves that by building an end-to-end pipeline that:
 
 ---
 
+## 📷 Sample Output
+
+### Transactions & Analytics Dashboard
+<img width="662" height="240" alt="image" src="https://github.com/user-attachments/assets/c05a81e9-431b-48ec-b570-8e868f099556" />
+
+
 ## 🧱 Architecture
