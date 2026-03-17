@@ -1,82 +1,81 @@
+# 💳 Bank Statement Analyzer
 
-# Bank Statement Analyzer
+A Python-based data engineering project that transforms unstructured bank statement PDFs into structured, analytics-ready Excel reports with automated insights and visual dashboards.
 
-A Python automation tool that converts multi‑page bank statement PDFs into structured Excel reports with analytics.
+---
 
-## Features
+## 🚀 Overview
 
-- Extracts transactions from bank statement PDFs
-- Automatically reconstructs multi‑line narration rows
-- Detects merchant names from narration
-- Categorizes spending ranges
-- Generates structured Excel reports
-- Auto‑formatted Excel output (date + currency)
-- Auto‑fit column widths
-- Generates spending analytics charts
+Bank statements are semi-structured documents with inconsistent layouts, multi-line entries, and embedded metadata. Manually analyzing them is time-consuming and error-prone.
 
-## Output Sheets
+This project solves that by building an end-to-end pipeline that:
 
-1. **Transactions**
-   - Date
-   - Merchant
-   - Narration
-   - Reference
-   - Value Date
-   - Debit
-   - Balance
-   - Category
+- Extracts transaction data from PDF statements
+- Cleans and reconstructs multi-line records
+- Detects merchants automatically
+- Categorizes spending patterns
+- Generates Excel reports with charts and insights
 
-2. **Monthly Summary**
-   - Total spending per month
+---
 
-3. **Category Breakdown**
-   - Spending distribution by amount bucket
+## ⚙️ Features
 
-4. **Spending Stats**
-   - Total spending
-   - Average transaction
-   - Largest transaction
+### 📄 Data Extraction
+- Parses multi-page bank statement PDFs
+- Handles inconsistent formats across pages
+- Reconstructs multi-line transaction records
 
-## Installation
+### 🧠 Data Processing
+- Cleans and normalizes transaction data
+- Extracts merchant names from narration
+- Categorizes spending into logical buckets
 
-Install required packages:
+### 📊 Analytics & Reporting
+- Monthly spending summary
+- Category-wise distribution
+- Top merchants analysis
+- Key financial metrics
 
-```
-pip install -r requirements.txt
-```
+### 📈 Excel Dashboard
+- Auto-formatted output (date + currency)
+- Auto-fit column widths
+- Pie chart for spending distribution
+- Bar chart for top merchants
 
-## Usage
+---
 
-Place your bank statement PDF in the project folder.
+## 📊 Output Structure
 
-Update the filename in the script if needed:
+### 1. Transactions Sheet
+| Date | Merchant | Narration | Debit | Balance | Category |
+|------|----------|----------|------|---------|----------|
 
-```
-INPUT_FILE = "statement.pdf"
-```
+---
 
-Run:
+### 2. Monthly Summary
+| Month | Total Spend |
 
-```
-python bank_statement_analyzer.py
-```
+---
 
-Output file:
+### 3. Category Breakdown
+- Spending grouped by amount ranges  
+- Pie chart visualization  
 
-```
-Bank_Statement_Report.xlsx
-```
+---
 
-## Tech Stack
+### 4. Top Merchants (NEW)
+| Merchant | Total Spend |
+- Bar chart of top 10 merchants  
 
-- Python
-- pandas
-- pdfplumber
-- xlsxwriter
+---
 
-## Future Improvements
+### 5. Spending Stats
+| Metric | Value |
+|--------|------|
+| Total Spending |
+| Average Transaction |
+| Largest Transaction |
 
-- Merchant spending dashboard
-- Automatic merchant grouping
-- Multi‑bank format detection
-- Expense category classification
+---
+
+## 🧱 Architecture
