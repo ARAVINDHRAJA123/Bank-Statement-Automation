@@ -1,87 +1,139 @@
-# 💳 Bank Statement Analyzer
+# 💳 Bank Statement Analyser
 
-A Python-based data engineering project that transforms unstructured bank statement PDFs into structured, analytics-ready Excel reports with automated insights and visual dashboards.
-
----
-
-## 🚀 Overview
-
-Bank statements are semi-structured documents with inconsistent layouts, multi-line entries, and embedded metadata. Manually analyzing them is time-consuming and error-prone.
-
-This project solves that by building an end-to-end pipeline that:
-
-- Extracts transaction data from PDF statements
-- Cleans and reconstructs multi-line records
-- Detects merchants automatically
-- Categorizes spending patterns
-- Generates Excel reports with charts and insights
+A Python tool that converts HDFC bank statement PDFs into a structured Excel report — with smart spending categories, anomaly detection, income vs expense charts, and merchant analysis. No API key or external tools needed.
 
 ---
 
-## ⚙️ Features
+## 🚀 Quick Start
 
-### 📄 Data Extraction
-- Parses multi-page bank statement PDFs
-- Handles inconsistent formats across pages
-- Reconstructs multi-line transaction records
+```bash
+pip install -r requirements.txt
+```
 
-### 🧠 Data Processing
-- Cleans and normalizes transaction data
-- Extracts merchant names from narration
-- Categorizes spending into logical buckets
+Rename your HDFC PDF to `Account Statement.pdf` and place it in the same folder, then:
 
-### 📊 Analytics & Reporting
-- Monthly spending summary
-- Category-wise distribution
-- Top merchants analysis
-- Key financial metrics
+```bash
+python bank_statement_analyser.py
+```
 
-### 📈 Excel Dashboard
-- Auto-formatted output (date + currency)
-- Auto-fit column widths
-- Pie chart for spending distribution
-- Bar chart for top merchants
+Open `Bank_Statement_Report.xlsx` to see your report.
 
 ---
 
-## 📊 Output Structure
+## 📦 Requirements
 
-### 1. Transactions Sheet
-| Date | Merchant | Narration | Debit | Balance | Category |
-|------|----------|----------|------|---------|----------|
+- Python 3.10 or higher
+- See `requirements.txt`
 
----
-
-### 2. Monthly Summary
-| Month | Total Spend |
-
----
-
-### 3. Category Breakdown
-- Spending grouped by amount ranges  
-- Pie chart visualization  
+```
+pdfplumber>=0.11.0
+openpyxl>=3.1.0
+```
 
 ---
 
-### 4. Top Merchants (NEW)
-| Merchant | Total Spend |
-- Bar chart of top 10 merchants  
+## ⚙️ How It Works
+
+```
+Account Statement.pdf
+        │
+        ▼
+┌──────────────────────────┐
+│  Spatial PDF Extraction  │  Reads every word with its x/y position on the page
+│  (pdfplumber)            │  Assigns each word to the correct column by coordinate
+│                          │  Reconstructs multi-line narrations automatically
+└───────────┬──────────────┘
+            │
+            ▼
+┌──────────────────────────┐
+│  Clean & Enrich          │  Removes duplicates
+│                          │  Extracts clean merchant names from UPI/POS/NEFT strings
+│                          │  Assigns a spending category to each transaction
+└───────────┬──────────────┘
+            │
+            ▼
+┌──────────────────────────┐
+│  Analytics               │  Monthly income vs expense breakdown
+│                          │  Category-wise spending summary
+│                          │  Top 10 merchants by spend
+│                          │  Anomaly detection — flags unusually large transactions
+└───────────┬──────────────┘
+            │
+            ▼
+   Bank_Statement_Report.xlsx
+```
 
 ---
 
-### 5. Spending Stats
-| Metric | Value |
-|--------|------|
-| Total Spending |
-| Average Transaction |
-| Largest Transaction |
+## 📊 Output — 6 Sheets
+
+### 1. Summary
+Total income, total expenses, net cash flow, transaction counts, largest credit, largest debit — all in one place.
+
+### 2. Transactions
+Full transaction list with date, merchant, narration, ref number, debit, credit, balance, category, and an anomaly flag. Debits in red, credits in green. Flagged rows highlighted.
+
+| Date | Merchant | Narration | Ref No | Value Date | Debit (₹) | Credit (₹) | Balance (₹) | Category | Flag |
+|------|----------|-----------|--------|------------|-----------|------------|-------------|----------|------|
+
+### 3. Monthly Summary
+Income, expense, and net per month with a clustered bar chart comparing income vs expense side by side. Value labels shown on every bar.
+
+### 4. Categories
+Spending grouped into real categories — Food & Dining, Transport, Shopping, Bills & Utilities, Health, Insurance, Entertainment, Finance & EMI, Salary / Income. Includes a pie chart.
+
+### 5. Top Merchants
+Top 10 merchants by total spend with a horizontal bar chart. Value labels on every bar.
+
+### 6. Anomalies ⚠
+Transactions that are statistically much larger than your usual spend, with a plain-English explanation of why each one was flagged — *"This is 9.8x your average spend of Rs. 870. Anything above Rs. 2,609 is flagged."*
 
 ---
+
+## 🛠 Configuration
+
+All settings are at the top of the script:
+
+```python
+INPUT_PDF   = "Account Statement.pdf"   # your PDF filename
+OUTPUT_XLSX = "Bank_Statement_Report.xlsx"
+ANOMALY_Z   = 2.0   # sensitivity — lower = more flags, higher = fewer
+```
+
+To add or edit spending categories, update `CATEGORY_KEYWORDS`:
+
+```python
+CATEGORY_KEYWORDS = {
+    "Food & Dining": ["swiggy", "zomato", "your_restaurant", ...],
+    "My Category":   ["keyword1", "keyword2"],
+}
+```
+
+---
+
+## 🏦 Compatibility
+
+Tested on HDFC Bank savings account statements (text-based PDF).
+
+> ⚠️ Scanned PDFs will not work. The PDF must be text-based — if you can select and copy text from it, it will work. If not, it is a scanned image and needs OCR first.
+
+For other banks (SBI, ICICI, Axis), the `HDFC_COLS` coordinate boundaries at the top of the script need to be adjusted to match that bank's column layout.
+
+---
+
+## 📁 Project Structure
+
+```
+Bank-Statement-Automation/
+├── bank_statement_analyser.py   ← main script
+├── Account Statement.pdf             ← your input PDF (rename to this)
+├── Bank_Statement_Report.xlsx        ← generated output
+├── requirements.txt
+└── README.md
+```
 
 ## 📷 Sample Output
 
 ### Transactions & Analytics Dashboard
-<img width="662" height="240" alt="image" src="https://github.com/user-attachments/assets/c05a81e9-431b-48ec-b570-8e868f099556" />
 
-
-## 🧱 Architecture
+<img width="1339" height="659" alt="image" src="https://github.com/user-attachments/assets/d52e77f7-1d92-43dd-8ab8-a3c9fea39130" />
